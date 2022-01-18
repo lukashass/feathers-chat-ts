@@ -4,6 +4,7 @@ import { LocalStrategy } from '@feathersjs/authentication-local';
 import { expressOauth, OAuthStrategy, OAuthProfile } from '@feathersjs/authentication-oauth';
 
 import { Application } from './declarations';
+import { defineAbilitiesFor } from './authentication.abilities';
 
 declare module './declarations' {
   interface ServiceTypes {
@@ -36,4 +37,19 @@ export default function(app: Application) {
 
   app.use('/authentication', authentication);
   app.configure(expressOauth());
+  app.service('authentication').hooks({
+    after: {
+      create: [
+      context => {
+        const { user } = context.result;
+        if (!user) return context;
+        const ability = defineAbilitiesFor(user);
+        context.result.ability = ability;
+        context.result.rules = ability.rules;
+
+        return context;
+      }
+      ]
+    }
+  });
 }

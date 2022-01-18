@@ -2,6 +2,7 @@ import path from 'path';
 import favicon from 'serve-favicon';
 import compress from 'compression';
 import helmet from 'helmet';
+import casl from 'feathers-casl';
 
 import feathers from '@feathersjs/feathers';
 import configuration from '@feathersjs/configuration';
@@ -36,6 +37,8 @@ app.use('/', express.static(app.get('public')));
 // Set up Plugins and providers
 app.configure(express.rest());
 app.configure(socketio());
+
+app.configure(casl());
 
 // Configure other middleware (see `middleware/index.js`)
 app.configure(middleware);
